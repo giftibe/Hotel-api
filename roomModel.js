@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
-// const {DATABASES} =require('./constants')
 const Schema = mongoose.Schema
 
 
 const roomTypeSchema =  new Schema({
 
-        name: {type: String, required: true}
+        name: {type: String, required: true},
 })
 
 const roomSchema =  new Schema({
@@ -13,13 +12,15 @@ const roomSchema =  new Schema({
                 type:String,
                 required: true
             },  
-            prices: {
-                type:Number,
+
+            roomType:{
+                type: Schema.Types.ObjectId,
+                ref: 'myroomtype',
                 required: true
             },
-            types:{
-                type: mongoose.Types.ObjectId,
-                ref: 'roomTypes',
+            
+            price: {
+                type:Number,
                 required: true
             },
         }

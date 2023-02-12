@@ -3,24 +3,26 @@ const express = require('express');
 const dotenv = require("dotenv");
 dotenv.config();
 const cors = require('cors');
-// const bodyParser = require('body-parser');
+
 
 
 //IMPORTS
-const {RoomTypes,Room} =  require('./rooms');
-// const myMy = require('./routes')
+const {RoomTypes,Room} =  require('./roomModel');
 const database = require('./database');
-// const mongoose = require('mongoose');
 const Controller =require("./controller")
-
+const {MESSAGES} = require("./constants");
 
 const app = express();
 app.use(cors());
 app.use(express.json())
-// app.use(bodyParser.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 3000;
 
+//WELCOME ROUTE
+app.get("/api/v1/", async (req, res) => {
+    res.send({ message: MESSAGES.WELCOME})
+});
 
+// FOR CREATING ROOM TYPES
 app.post("/api/v1/rooms-types", async (req, res) => {
     try {
         const data = await Controller.createRoomType(req.body);
@@ -32,68 +34,72 @@ app.post("/api/v1/rooms-types", async (req, res) => {
     }
 });
 
+//FETCHING ALL ROOM TYPES
+app.get("/api/v1/rooms-types", async (req, res) => {
+    try {
+        const data = await Controller.fetchAllRoomTypes();
+        res.status(200)
+            .send({ message: MESSAGES.FETCHED, success: true, ROOM_TYPES: data });
+    } catch (err) {
+        res.status(500)
+            .send({ message: err.message || MESSAGES.ERROR, success: false });
+    }
+});
+
+//POST ENDPOINT FOR STORING ROOMS
+app.post("/api/v1/rooms", async (req, res) => {
+    try {
+        const data = await (await Controller.createRoom(req.body)).populate("roomType");
+        res.status(201)
+            .send({ message: MESSAGES.CREATED, success: true, ROOMS:data });
+    } catch (err) {
+        res.status(500)
+            .send({ message: err.message || MESSAGES.ERROR, success: false });
+    }
+}); 
+
+// DELETE ROOMS
+app.delete("/api/v1/rooms/:id", async (req, res) => {
+    try {
+        const data = await Controller.deleteRoom(req.params.id);
+        res.status(200)
+            .send({ message: MESSAGES.DELETED, success: true, data });
+    } catch (err) {
+        res.status(500)
+            .send({ message: err.message || MESSAGES.ERROR, success: false });
+    }
+});
+
+// FETCHING A ROOM BY ID
+app.get("/api/v1/rooms/:id", async (req, res) => {
+    try {
+        const data = await Controller.fetchRoom(req.params.id);
+        res.status(200)
+            .send({ message: MESSAGES.FETCHED, success: true, data });
+    } catch (err) {
+        res.status(500)
+            .send({ message: err.message || MESSAGES.ERROR, success: false });
+    }
+});;
+
+//========================
+
+// PATCH ROOMS
+app.patch("/api/v1/rooms/:id", async (req, res) => {
+    try {
+        let id = req.params.id
+        let type = req.body
+        const change = await Controller.editRoom((id), (type), {new: true});
+        res.status(200)
+            .send({ message: MESSAGES.UPDATED, success: true, change});
+    } catch (err) {
+        res.status(500)
+            .send({ message: err.message || MESSAGES.ERROR, success: false });
+    }
+});
+
 
 app.listen(PORT, ()=>{
     database()
     console.log(`server started on port: ${PORT}`);
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// app.get('/', async function(req, res){
-//     roomtype = [{name:'single'}, {name:'couples'}]
-//     room = [{name:'king', price: 9500}, {name:'master', price: 4300}]
-
-//     const newroomtype = await roomTypes.create(roomtype)
-//     const newrooms = await Room.create(room)
-
-//     res.json({newroomtype, newrooms})
-// })
-
-
-//   let roomObj = {
-//         name: req.body.name,
-//         price: req.body.price
-//     }
-//     let newRoom = new Room(roomObj)
-
-//     newRoom.save((err, room)=>{
-//         if(!err){
-//         console.log('adding rooms');
-//         res.status(200).send(room)
-//         }
-//         else{
-//             res.status(400).send('An error occured adding room')
-//         }
-
-//     })
-
-
-
-
-
-
-// app.get('/', async (req, res) => {
-
-//     //     const roomies = new Room (
-//     //     {name: "master", price: 23234}
-//     //         // [name: "Nighty", price: 23234],
-//     //         // [ name: "suite", price: 127032],
-        
-//     // )
-
-//     // roomies.save()
-//     // console.log(roomies);
-//     // res.send(roomies)
-// })

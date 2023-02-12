@@ -10,7 +10,8 @@ const constants ={
         UPDATED: 'Resource updated successfully',
         ERROR:   'Resource error',
         CREATED: 'Resource created successfully',
-        DELETED: 'Resource deletely successfully'
+        DELETED: 'Resource deleted successfully',
+        WELCOME: 'Hotel Management api'
     }
 }
 
