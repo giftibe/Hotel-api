@@ -11,6 +11,7 @@ const {RoomTypes,Room} =  require('./roomModel');
 const database = require('./database');
 const Controller =require("./controller")
 const {MESSAGES} = require("./constants");
+const { type } = require('os');
 
 const app = express();
 app.use(cors());
@@ -87,17 +88,33 @@ app.get("/api/v1/rooms/:id", async (req, res) => {
 // PATCH ROOMS
 app.patch("/api/v1/rooms/:id", async (req, res) => {
     try {
-        let id = req.params.id
-        let type = req.body
-        const change = await Controller.editRoom((id), (type), {new: true});
+        const id = req.params.id
+        const type = req.body
+
+        const change = await Controller.editRoom(id, type);
+        // console.log(id, type);
+        console.log("======================");
+
         res.status(200)
             .send({ message: MESSAGES.UPDATED, success: true, change});
+            console.log(change);
     } catch (err) {
         res.status(500)
             .send({ message: err.message || MESSAGES.ERROR, success: false });
     }
 });
 
+
+app.get("/api/v1/rooms", async (req, res) => {
+    try {
+        const data = await Controller.fetchAllRoomTypes();
+        res.status(200)
+            .send({ message: MESSAGES.FETCHED, success: true, ROOM_TYPES: data });
+    } catch (err) {
+        res.status(500)
+            .send({ message: err.message || MESSAGES.ERROR, success: false });
+    }
+})
 
 app.listen(PORT, ()=>{
     database()

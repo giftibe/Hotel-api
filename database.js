@@ -5,8 +5,8 @@ function database(){
         .set('strictQuery', true)
         //connected here
         .connect(process.env.DATABASE_URI, {
-            // userCreateIndex: true,
             useNewUrlParser:true,
+            // userCreateIndex: true,
             // userUnifiedTopology:true,
         })
         .then(()=>{

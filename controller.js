@@ -1,9 +1,10 @@
 const {RoomTypes,Room} = require('./roomModel')
+const mongoose = require('mongoose')
 
 class controller{
     //TO CREATE ROOM TYPE
-    async createRoomType(id){
-            return await RoomTypes.create(id)
+    async createRoomType(data){
+            return await RoomTypes.create(data)
     }
 
     //TO FETCH ALL ROOM TYPE
@@ -22,8 +23,8 @@ class controller{
     }
 
     //TO EDIT ROOMS
-    async editRoom(id, type, opt){
-        return await Room.findOneAndUpdate({_id: id}, {type: type}, opt);
+    async editRoom(id, type){
+        return await Room.findOneAndUpdate({_id:id}, {type: type});
     }
 
     //TO DELETE ROOMS
